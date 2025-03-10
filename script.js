@@ -260,7 +260,7 @@ function loadQuestion() {
     nextButton.disabled = true; // Pastikan tombol "Next Question" tidak bisa diklik
 }
 
-// Cek jawaban utama & sub-questions sebelum lanjut ke soal berikutnya
+// **Fix: Cek semua jawaban sebelum lanjut**
 function checkAnswer() {
     const q = questions[currentQuestionIndex];
     const selectedOption = document.querySelector('input[name="answer"]:checked');
@@ -272,6 +272,7 @@ function checkAnswer() {
 
     let allCorrect = selectedOption.value === q.answer;
 
+    // **Fix: Cek sub-questions juga dengan jawaban yang benar**
     if (q.subQuestions) {
         q.subQuestions.forEach((subQ, subIndex) => {
             const selectedSubOption = document.querySelector(`input[name="sub-answer-${subIndex}"]:checked`);
@@ -283,23 +284,32 @@ function checkAnswer() {
 
     if (allCorrect) {
         resultContainer.innerHTML = `<p style="color: green; font-weight: bold;">Jawaban Benar!</p>`;
-        nextButton.disabled = false;
+        nextButton.disabled = false; // **Fix: Aktifkan tombol "Next Question"**
     } else {
         resultContainer.innerHTML = `<p style="color: red; font-weight: bold;">Jawaban Salah. Coba lagi!</p>`;
+        nextButton.disabled = true; // **Fix: Pastikan tombol "Next" tetap mati jika salah**
     }
 }
 
-// Pindah ke pertanyaan berikutnya
+// **Fix: Pindah ke pertanyaan berikutnya**
 function nextQuestion() {
     currentQuestionIndex++;
     if (currentQuestionIndex < questions.length) {
         resultContainer.innerHTML = "";
+        nextButton.disabled = true; // **Fix: Matikan tombol "Next" untuk pertanyaan baru**
         loadQuestion();
     } else {
         quizContainer.innerHTML = "<h2>Selamat! Kamu telah menyelesaikan kuis!</h2>";
         nextButton.style.display = "none";
     }
 }
+
+// **Event listener tombol cek jawaban**
+document.getElementById("check-btn").addEventListener("click", checkAnswer);
+
+// **Event listener tombol Next Question**
+nextButton.addEventListener("click", nextQuestion);
+
 
 // Fungsi untuk memainkan lagu & menampilkan popup
 let isPlaying = false;
